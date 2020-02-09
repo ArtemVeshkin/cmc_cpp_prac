@@ -2,6 +2,9 @@
 # Created by https://www.gitignore.io/api/c++,linux,windows,sublimetext,visualstudio,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=c++,linux,windows,sublimetext,visualstudio,visualstudiocode
 
+# Executable
+main
+
 ### C++ ###
 # Prerequisites
 *.d
