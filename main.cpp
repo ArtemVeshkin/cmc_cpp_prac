@@ -1,37 +1,164 @@
-#include <vector>
-#include <list>
-#include <algorithm>
+#include <iostream>
+#include <cstdio>
+#include <string>
+#include <sstream>
+#include <cmath>
 
-/*
-Функция должна удалить из списка lst элементы с номерами, заданными в
-векторе v. Элементы списка нумеруются от 1. Номера элементов списка
-отражают позиции элементов на момент начала работы программы. Если номер
-повторяется в массиве более одного раза, все вхождения, кроме первого,
-игнорируются. Если число в массиве не является допустимым номером
-элемента в списке, оно игнорируется.
-*/
-void process(const std::vector<int>& v, std::list<int>& lst)
+namespace numbers
 {
-    size_t size = lst.size();
-    std::vector<int> local_v;
-    std::copy(begin(v), end(v), back_inserter(local_v));
-    
-    std::vector<int>::iterator v_it = std::unique(begin(local_v), end(local_v));
-    local_v.erase(v_it, end(local_v));
-    std::sort(begin(local_v), end(local_v));
-    
-    int steps = 0;
-    std::list<int>::iterator l_it = begin(lst);
-    for (std::vector<int>::iterator i = begin(local_v); i != end(local_v); ++i)
+    class complex
     {
-        if (*i >= 1 && *i <= size)
+        double re, im;
+
+        void test_stream(std::stringstream &stream, char c)
         {
-            for (int j = 0; j < *i - 1 - steps; ++j)
-            {
-                ++l_it;
-            }
-            l_it = lst.erase(l_it);
-            ++steps;
+            if (stream.peek() != c)
+                {
+                    std::stringstream ex;
+                    ex << "expected /, but has: " << (char) stream.peek();
+                    throw std::runtime_error(ex.str());
+                }
         }
+    public:
+        complex(const double re = 0., const double im = 1.)
+        {
+            this->re = re;
+            this->im = im;
+        }
+        explicit complex(const char *str)
+        {
+            std::stringstream stream{std::string(str)}; 
+            try
+            {
+                test_stream(stream, '(');
+                stream.ignore(1);
+                stream >> re;
+                test_stream(stream, ',');
+                stream.ignore(1);
+                stream >> im;
+            }
+            catch(const std::exception& ex)
+            {
+                std::cerr << ex.what() << std::endl;
+            }
+            
+        }
+        double get_re() const
+        {
+            return re;
+        }
+        double get_im() const
+        {
+            return im;
+        }
+        double abs() const
+        {
+            return sqrt(re * re + im * im);
+        }
+        double abs2() const
+        {
+            return re * re + im * im;
+        }
+        void to_string(char *buf, size_t size)
+        {
+            snprintf(buf, size, "(%.10g,%.10g)", re, im);
+        }
+        complex operator+(complex val)
+        {
+            return complex(re + val.re, im + val.im);
+        }
+        complex operator-(complex val)
+        {
+            return complex(re - val.re, im - val.im);
+        }
+        complex operator*(complex val)
+        {
+            return complex(re * val.re - im * val.im,
+                           re * val.im + im * val.re);
+        }
+        complex operator/(complex val)
+        {
+            double k = val.re * val.re + val.im * val.im;
+            return ((re * val.re + im * val.im) / k,
+                    (-re * val.im + im * val.re) / k);
+        }
+        complex operator~()
+        {
+            return complex(re, -im);
+        }
+        complex operator-()
+        {
+            return complex(-re, -im);
+        }
+        void print()
+        {
+            printf("(%.10g,%.10g)\n", re, im);
+        }
+    };
+
+    class complex_stack
+    {
+        size_t size_, pos_;
+        complex* ptr_;
+
+        void push(complex val)
+        {
+            ++pos_;
+            if (pos_ < size_)
+            {
+                size_ <<= 2;
+                complex* new_stack = new complex[size_];
+                for (int i = 0; i + 1 < pos_; ++i)
+                {
+                    new_stack[i] = ptr_[i];
+                }
+                delete[] ptr_;
+                ptr_ = new_stack;
+            }
+            ptr_[pos_ - 1] = val;
+        }
+
+    public:
+        complex_stack() : size_(0), pos_(0), ptr_(NULL) {}
+
+        complex_stack(size_t size) : size_(size), pos_(size)
+        {
+            ptr_ = new complex[size];
+        }
+
+        ~complex_stack() { delete[] ptr_; }
+
+        size_t size() { return size_; }
+
+        complex& operator[](int i) { return ptr_[i]; }
+
+        complex_stack operator<<(complex val)
+        {
+            complex_stack new_stack = *this;
+            new_stack.push(val);
+            return new_stack;
+        }
+
+        complex operator+() { return ptr_[pos_ - 1]; }
+
+        complex_stack operator~()
+        {
+            complex_stack new_stack = *this;
+            delete &new_stack[new_stack.pos_ - 1];
+            return new_stack;
+        }
+    };
+};
+
+int main()
+{
+    numbers::complex_stack stack(5);
+    for (int i = 0; i < 5; ++i)
+    {
+        stack[i] = {static_cast<double>(i)};
+    }
+    for (int i = 0; i < 5; ++i)
+    {
+        stack[i].print();
     }
 }
