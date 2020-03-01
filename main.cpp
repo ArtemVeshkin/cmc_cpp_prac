@@ -98,53 +98,64 @@ namespace numbers
 
     class complex_stack
     {
-        size_t size_, pos_;
-        complex* ptr_;
+        size_t size_, capacity_;
+        complex *data_;
 
         void push(complex val)
         {
-            ++pos_;
-            if (pos_ < size_)
+            if (capacity_ == size_)
             {
-                size_ <<= 2;
-                complex* new_stack = new complex[size_];
-                for (int i = 0; i + 1 < pos_; ++i)
+                capacity_ *= 2;
+                complex *new_data = new complex[capacity_];
+                for (int i = 0; i < size_; ++i)
                 {
-                    new_stack[i] = ptr_[i];
+                    new_data[i] = data_[i];
                 }
-                delete[] ptr_;
-                ptr_ = new_stack;
+                delete[] data_;
             }
-            ptr_[pos_ - 1] = val;
+            ++size_;
+            data_[size_ - 1] = val;
         }
 
+        complex pop()
+        {
+            --size_;
+            return data_[size_];
+        }
     public:
-        complex_stack() : size_(0), pos_(0), ptr_(NULL) {}
-
-        complex_stack(size_t size) : size_(size), pos_(size)
-        {
-            ptr_ = new complex[size];
+        complex_stack(size_t size = 0) : size_(size), capacity_(size + 1) {
+            data_ = new complex[capacity_];
         }
 
-        ~complex_stack() { delete[] ptr_; }
+        complex_stack(complex_stack& base) {
+            size_ = base.size();
+            capacity_ = size_;
+            data_ = new complex[size_];
+            for (size_t i = 0; i < size_; ++i)
+            {
+                data_[i] = base[i];
+            }
+        }
 
-        size_t size() { return size_; }
+        ~complex_stack() { delete[] data_; }
 
-        complex& operator[](int i) { return ptr_[i]; }
+        size_t size() const { return size_; }
 
-        complex_stack operator<<(complex val)
+        complex& operator[](size_t index) { return data_[index]; }
+
+        complex_stack& operator<<(const complex& val)
         {
-            complex_stack new_stack = *this;
+            complex_stack new_stack(*this);
             new_stack.push(val);
             return new_stack;
         }
 
-        complex operator+() { return ptr_[pos_ - 1]; }
+        complex operator+() { return data_[size_ - 1]; }
 
         complex_stack operator~()
         {
-            complex_stack new_stack = *this;
-            delete &new_stack[new_stack.pos_ - 1];
+            complex_stack new_stack(*this);
+            new_stack.pop();
             return new_stack;
         }
     };
