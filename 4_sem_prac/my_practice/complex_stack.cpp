@@ -11,11 +11,12 @@ namespace numbers
             {
                 capacity_ *= 2;
                 complex *new_data = new complex[capacity_];
-                for (int i = 0; i < size_; ++i)
+                for (size_t i = 0; i < size_; ++i)
                 {
                     new_data[i] = data_[i];
                 }
                 delete[] data_;
+                data_ = new_data;
             }
             ++size_;
             data_[size_ - 1] = val;
@@ -27,11 +28,15 @@ namespace numbers
             return data_[size_];
         }
     public:
-        complex_stack(size_t size = 0) : size_(size), capacity_(size + 1) {
+        complex_stack() : size_(0), capacity_(1) {
             data_ = new complex[capacity_];
         }
 
-        complex_stack(complex_stack& base) {
+        complex_stack(size_t size) : size_(size), capacity_(size + 1) {
+            data_ = new complex[capacity_];
+        }
+
+        complex_stack(const complex_stack& base) {
             size_ = base.size();
             capacity_ = size_;
             data_ = new complex[size_];
@@ -45,18 +50,18 @@ namespace numbers
 
         size_t size() const { return size_; }
 
-        complex& operator[](size_t index) { return data_[index]; }
+        complex& operator[](size_t index) const { return data_[index]; }
 
-        complex_stack& operator<<(const complex& val)
+        complex_stack operator<<(const complex val) const
         {
             complex_stack new_stack(*this);
             new_stack.push(val);
             return new_stack;
         }
 
-        complex operator+() { return data_[size_ - 1]; }
+        complex operator+() const { return data_[size_ - 1]; }
 
-        complex_stack operator~()
+        complex_stack operator~() const
         {
             complex_stack new_stack(*this);
             new_stack.pop();
