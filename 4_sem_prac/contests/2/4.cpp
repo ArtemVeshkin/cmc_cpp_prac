@@ -3,10 +3,9 @@
 #include <sstream>
 #include <vector>
 
-// #include "cmc_complex.h"
-// #include "cmc_complex_stack.h"
-// #include "cmc_complex_eval.h"
-#include "include.h"
+#include "cmc_complex.h"
+#include "cmc_complex_stack.h"
+#include "cmc_complex_eval.h"
 
 int main(int argc, char const *argv[])
 {
