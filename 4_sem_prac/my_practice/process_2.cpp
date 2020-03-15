@@ -14,15 +14,15 @@ void process(const std::vector<int>& v, std::list<int>& lst)
 {
     size_t size = lst.size();
     std::vector<int> local_v;
-    std::copy(begin(v), end(v), back_inserter(local_v));
-    
-    std::vector<int>::iterator v_it = std::unique(begin(local_v), end(local_v));
-    local_v.erase(v_it, end(local_v));
-    std::sort(begin(local_v), end(local_v));
+    std::copy(std::begin(v), std::end(v), back_inserter(local_v));
+
+    std::sort(std::begin(local_v), std::end(local_v));    
+    auto v_it = std::unique(std::begin(local_v), std::end(local_v));
+    local_v.erase(v_it, std::end(local_v));
     
     int steps = 0;
-    std::list<int>::iterator l_it = begin(lst);
-    for (std::vector<int>::iterator i = begin(local_v); i != end(local_v); ++i)
+    auto l_it = std::begin(lst);
+    for (auto i = std::begin(local_v); i != std::end(local_v); ++i)
     {
         if (*i >= 1 && *i <= size)
         {
@@ -34,4 +34,4 @@ void process(const std::vector<int>& v, std::list<int>& lst)
             ++steps;
         }
     }
-}
+}   

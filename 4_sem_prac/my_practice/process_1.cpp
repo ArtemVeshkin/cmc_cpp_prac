@@ -8,29 +8,20 @@
 шагом 1). Элементы вектора копируются "поверх" существующих элементов
 списка, если соответствующие элементы существуют.
 */
-void process(const std::vector<int>& v,
-             std::list<int>& l, int h)
-{
-    auto v_it = begin(v);
-    auto l_it = begin(l);
-    auto l_end = end(l);
 
-    while (true)
+void process(const std::vector<int>& v,
+    std::list<int>& l, int h)
+{
+    auto l_it = std::begin(l);
+    
+    for (auto v_it = std::begin(v);
+        v_it + h <= std::end(v) && l_it != std::end(l); v_it += h, ++l_it)
     {
-        if (h <= end(v) - v_it)
-        {
-            if (l_it != l_end)
-            {
-                *l_it = *v_it;
-                ++l_it;
-            }
-            v_it += h;
-        } else {
-            break;
-        }
+        *l_it = *v_it;
     }
-    for (auto i = begin(l); i != l_end; ++i)
+
+    for (auto it = std::rbegin(l); it != std::rend(l); ++it)
     {
-        std::cout << *i << std::endl;
+        std::cout << *it << '\n';
     }
 }
