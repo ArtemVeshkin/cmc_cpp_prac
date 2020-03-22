@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <set>
+#include <map>
 
 size_t correction_point(int x, int y, size_t correction)
 {
@@ -13,7 +15,7 @@ size_t correction_point(int x, int y, size_t correction)
         return correction / 2;
     }
     return 0;
-} 
+}
 
 int main()
 {
@@ -33,64 +35,56 @@ int main()
         std::getline(std::cin, s);
         matrix.push_back(v);
     }
+
     // Max
-    size_t max = 0;
-    std::pair<int, int> max_i = {0, 0};
+    std::map<size_t, std::set<std::pair<int, int>>, std::greater<size_t>> max;
     for (size_t i = 0; i < matrix.size(); ++i)
     {
         for (size_t j = 0; j < matrix[i].size(); ++j)
         {
-            if (matrix[i][j] > max)
-            {
-                max = matrix[i][j];
-                max_i = {i, j};
-            }
+            max[matrix[i][j]].insert({i, j});
         }
     }
+
     // Corrections
     size_t x;
     while (std::cin >> x)
     {
+        std::pair cur_max = *max.begin()->second.begin();
         for (int i = -1; i < 2; ++i)
-       {
+        {
             for (int j = -1; j < 2; ++j)
             {
-                if (max_i.first + i >= 0 
-                    && max_i.first + i < static_cast<int>(matrix.size())
-                    && max_i.second + j >= 0 
-                    && max_i.second + j < static_cast<int>(matrix[max_i.first + i].size()))
+                int cur_x = cur_max.first + i;
+                int cur_y = cur_max.second + j;
+                if (cur_x >= 0 && cur_x < static_cast<int>(matrix.size())
+                    && cur_y >= 0 && cur_y < static_cast<int>(matrix[cur_x].size()))
                 {
                     size_t correction = correction_point(i, j, x);
-                    if (correction <= matrix[i][j])
+                    size_t prev_val = matrix[cur_x][cur_y];
+                    if (correction >= prev_val)
                     {
-                        matrix[max_i.first + i][max_i.second + j] = 0;
+                        matrix[cur_x][cur_y] = 0;
                     } else {
-                        matrix[max_i.first + i][max_i.second + j] -= correction;
+                        matrix[cur_x][cur_y] -= correction;
+                    }
+                    max[prev_val].erase({cur_x, cur_y});
+                    max[matrix[cur_x][cur_y]].insert({cur_x, cur_y});
+                    if (max[prev_val].empty())
+                    {
+                        max.erase(prev_val);
                     }
                 }
             }
-
-            for (auto row : matrix)
-            {
-                for (auto elem : row)
-                {
-                    std::cout << elem << ' ';
-                }
-                std::cout << std::endl;
-            }
         }
-
-        
     }
 
-    for (auto row : matrix)
+    for (const auto row : matrix)
     {
-        for (auto elem : row)
+        for (const auto elem : row)
         {
             std::cout << elem << ' ';
         }
         std::cout << std::endl;
     }
-
-    system("pause");
 }
