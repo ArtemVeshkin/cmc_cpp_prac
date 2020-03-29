@@ -1,25 +1,15 @@
 class Sub
 {
-    int a, b;
+    int a_, b_;
 public:
-    Sub(int a, int b)
-    {
-        this->a = a;
-        this->b = b;
-    }
-    Sub(Sub sum, int val)
-    {
-        a = sum.a - sum.b;
-        b = val;
-    }
-    Sub(int val, Sub sum)
-    {
-        a = val;
-        b = sum.a - sum.b;
-    }
+    Sub(int a, int b) : a_(a), b_(b) {}
+
+    Sub(Sub sum, int val) : a_(sum.a_ - sum.b_), b_(val) {}
+    
+    Sub(int val, Sub sum) : a_(val), b_(sum.a_ - sum.b_) {}
 
     int value() const
     {
-        return a - b;
+        return a_ - b_;
     }
 };

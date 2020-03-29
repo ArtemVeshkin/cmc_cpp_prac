@@ -7,13 +7,11 @@ namespace numbers
 
         void push(const complex& val)
         {
-            if (capacity_ == size_)
-            {
+            if (capacity_ == size_) {
                 capacity_ *= 2;
                 complex *new_data = static_cast<complex*> (
-                    ::operator new (capacity_ * sizeof(*new_data)));
-                for (size_t i = 0; i < size_; ++i)
-                {
+                        ::operator new (capacity_ * sizeof(*new_data)));
+                for (size_t i = 0; i < size_; ++i) {
                     new_data[i] = data_[i];
                 }
                 ::operator delete(data_);
@@ -24,20 +22,19 @@ namespace numbers
 
         void pop() { (data_ + --size_)->~complex(); }
     public:
-        complex_stack(size_t size = 0) : size_(size), capacity_(size + 1), data_(nullptr) {
+        complex_stack(size_t size = 0) : size_(size), capacity_(size + 1), data_(nullptr) 
+        {
             data_ = static_cast<complex*> (::operator new (capacity_ * sizeof(*data_)));
-            for (size_t i = 0; i < capacity_; ++i)
-            {
+            for (size_t i = 0; i < capacity_; ++i) {
                 new(data_ + i) complex();
             }
         }
 
         complex_stack(const complex_stack& base) : size_(base.size_),
-            capacity_(base.capacity_), data_(nullptr)
+                capacity_(base.capacity_), data_(nullptr)
         {
             data_ = static_cast<complex*> (::operator new (capacity_ * sizeof(*data_)));
-            for (size_t i = 0; i < size_; ++i)
-            {
+            for (size_t i = 0; i < size_; ++i) {
                 new(data_ + i) complex(base[i]);
             }
         }
@@ -46,30 +43,35 @@ namespace numbers
 
         void operator=(const complex_stack& base)
         {
-            if (&base == this) { return; }
+            if (&base == this) {
+                return;
+            }
             
-            if (capacity_ < base.capacity_)
-            {
+            if (capacity_ < base.capacity_) {
                 ::operator delete(data_);
                 size_ = base.size_;
                 capacity_ = base.capacity_;
                 data_ = static_cast<complex*> (::operator new (capacity_ * sizeof(*data_)));
-                for (size_t i = 0; i < capacity_; ++i)
-                {
+                for (size_t i = 0; i < capacity_; ++i) {
                     new(data_ + i) complex(base[i]);
                 }
             } else {
                 size_ = base.size_;
-                for (size_t i = 0; i < capacity_; ++i)
-                {
+                for (size_t i = 0; i < capacity_; ++i) {
                     data_[i] = base.data_[i];
                 }
             }
         }
 
-        size_t size() const { return size_; }
+        size_t size() const
+        {
+            return size_;
+        }
 
-        complex& operator[](size_t index) const { return data_[index]; }
+        complex& operator[](size_t index) const
+        {
+            return data_[index];
+        }
 
         complex_stack operator<<(const complex& val) const
         {

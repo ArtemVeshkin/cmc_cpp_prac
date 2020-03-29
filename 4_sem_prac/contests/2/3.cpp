@@ -46,10 +46,8 @@ namespace numbers
             }}
         };
 
-        for (const auto &op : args)
-        {
-            if (op[0] == '(')
-            {
+        for (const auto &op : args) {
+            if (op[0] == '(') {
                 stack.push(complex(op));
             } else {
                 operations[op]();

@@ -4,12 +4,11 @@
 
 int main()
 {
-    long double sum = 0;
-    long double ma2 = 0;
+    double sum = 0;
+    double ma2 = 0;
     long long n = 0;
     double x;
-    while (std::cin >> x)
-    {
+    while (std::cin >> x) {
         ++n;
         sum += x;
         ma2 += x * x;

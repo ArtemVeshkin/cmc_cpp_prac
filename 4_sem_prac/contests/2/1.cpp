@@ -10,35 +10,16 @@ namespace numbers
     {
         double re_, im_;
 
-        void test_stream(std::stringstream &stream, char c)
-        {
-            if (stream.peek() != c)
-                {
-                    std::stringstream ex;
-                    ex << "expected /, but has: " << (char) stream.peek();
-                    throw std::runtime_error(ex.str());
-                }
-        }
     public:
         complex(const double re = 0., const double im = 0.) : re_(re), im_(im) {}
 
         explicit complex(std::string str)
         {
             std::stringstream stream{str};
-            try
-            {
-                test_stream(stream, '(');
-                stream.ignore(1);
-                stream >> re_;
-                test_stream(stream, ',');
-                stream.ignore(1);
-                stream >> im_;
-            }
-            catch(const std::exception& ex)
-            {
-                std::cerr << ex.what() << std::endl;
-            }
-            
+            stream.ignore(1);
+            stream >> re_;
+            stream.ignore(1);
+            stream >> im_;            
         }
 
         double re() const { return re_; }
@@ -97,8 +78,11 @@ namespace numbers
         }
 
         friend complex operator+ (const complex lhs, const complex rhs);
+        
         friend complex operator- (const complex lhs, const complex rhs);
+        
         friend complex operator* (const complex lhs, const complex rhs);
+        
         friend complex operator/ (const complex lhs, const complex rhs);
     };
 

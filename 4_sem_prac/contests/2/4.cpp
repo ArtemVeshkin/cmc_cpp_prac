@@ -9,7 +9,7 @@
 
 int main(int argc, char const *argv[])
 {
-    numbers::complex c{std::string(argv[1])}, I;
+    numbers::complex c{std::string(argv[1])}, result;
     std::stringstream sstream;
     sstream << argv[2] << ' ' << argv[3];
     double r;
@@ -17,19 +17,17 @@ int main(int argc, char const *argv[])
     sstream >> r >> n;
 
     std::vector<std::string> args;
-    for (int i = 4; argv[i]; ++i)
-    {
+    for (int i = 4; argv[i]; ++i) {
         args.push_back(argv[i]);
     }
     
     double pi = acos(-1);
     double d = 2 * pi / n;
-    for (int i = 0; i < n; ++i)
-    {
+    for (int i = 0; i < n; ++i) {
         double angle = i * d;
         numbers::complex dl{-sin(angle) * d, cos(angle) * d};
-        I += numbers::eval(args, c + numbers::complex(
+        result += numbers::eval(args, c + numbers::complex(
             r * cos(angle), r * sin(angle))) * dl;
     }
-    std::cout << I.to_string() << std::endl;
+    std::cout << result.to_string() << std::endl;
 }

@@ -1,20 +1,12 @@
 class Sum
 {
-    int a, b;
+    int a_, b_;
 public:
-    Sum(int a, int b)
-    {
-        this->a = a;
-        this->b = b;
-    }
-    Sum(Sum sum, int val)
-    {
-        a = sum.a + sum.b;
-        b = val;
-    }
+    Sum(int a, int b) : a_(a), b_(b) {}
+    Sum(Sum sum, int val) : a_(sum.a_ + sum.b_), b_(val) {}
 
     int get() const
     {
-        return a + b;
+        return a_ + b_;
     }
 };

@@ -11,17 +11,17 @@ void process(const std::vector<int>& v1, std::vector<int>& v2)
     auto v_it = std::unique(std::begin(local_v), std::end(local_v));
     local_v.erase(v_it, std::end(local_v));
     
-    auto i1 = v2.begin();
+    auto i1 = std::begin(v2);
     auto i2 = i1;
-    auto cur = local_v.begin();
-    while (cur != local_v.end() && *cur < 0)
+    auto cur = std::begin(local_v);
+    while (cur != std::end(local_v) && *cur < 0)
     {
         ++cur;
     }
     int i;
     for (i = 0; i < size; ++i)
     {
-        if (cur == local_v.end())
+        if (cur == std::end(local_v))
         {
             break;
         }
