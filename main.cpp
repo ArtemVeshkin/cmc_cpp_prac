@@ -1,46 +1,33 @@
 #include <vector>
-#include <list>
-#include <algorithm>
+#include <iterator>
+#include <functional>
 
-void process(const std::vector<int>& v1, std::vector<int>& v2)
+template <typename Iterator, typename Function>
+void myapply(Iterator begin, Iterator end, Function func)
 {
-    int size = v2.size();
-    std::vector<int> local_v(v1);
-
-    std::sort(std::begin(local_v), std::end(local_v));
-    auto v_it = std::unique(std::begin(local_v), std::end(local_v));
-    local_v.erase(v_it, std::end(local_v));
-    
-    auto i1 = std::begin(v2);
-    auto i2 = i1;
-    auto cur = std::begin(local_v);
-    while (cur != std::end(local_v) && *cur < 0)
+    while (begin != end)
     {
-        ++cur;
+        func(*begin);
+        ++begin;
     }
-    int i;
-    for (i = 0; i < size; ++i)
+}
+
+template <typename Iterator, typename Function>
+std::vector<std::reference_wrapper
+        <typename std::iterator_traits<Iterator>::value_type>>
+myfilter2(Iterator begin, Iterator end, Function func)
+{
+    std::vector<std::reference_wrapper
+        <typename std::iterator_traits<Iterator>::value_type>> res;
+
+    while (begin != end)
     {
-        if (cur == std::end(local_v))
+        if (func(*begin))
         {
-            break;
+            res.push_back(*begin);
         }
-        if (i == *cur)
-        {
-            ++i1;
-            ++cur;
-            continue;
-        }
-        *i2 = *i1;
-        ++i2;
-        ++i1;
+        ++begin;
     }
 
-    for (int j = i; j < size; ++j)
-    {
-        *i2 = *i1;
-        ++i2;
-        ++i1;
-    }
-    v2.erase(i2, v2.end());
+    return res;
 }

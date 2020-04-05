@@ -1,41 +1,33 @@
-#include <algorithm>
-#include <set>
+#include <vector>
 #include <iterator>
+#include <functional>
 
-template<typename It1, typename It2>
-It2 myremove(It1 begin1, It1 end1,
-    It2 begin2, It2 end2)
+template <typename Iterator, typename Function>
+void myapply(Iterator begin, Iterator end, Function func)
 {
-    std::set<int> idxs;
-    idxs.insert(begin1, end1);
-
-    auto idxs_it =  idxs.begin();
-    while (true)
+    while (begin != end)
     {
-        if (idxs_it == idxs.end() || *idxs_it >= 0)
+        func(*begin);
+        ++begin;
+    }
+}
+
+template <typename Iterator, typename Function>
+std::vector<std::reference_wrapper
+        <typename std::iterator_traits<Iterator>::value_type>>
+myfilter2(Iterator begin, Iterator end, Function func)
+{
+    std::vector<std::reference_wrapper
+        <typename std::iterator_traits<Iterator>::value_type>> res;
+
+    while (begin != end)
+    {
+        if (func(*begin))
         {
-            break;
+            res.push_back(*begin);
         }
-        ++idxs_it;
+        ++begin;
     }
 
-    It2 end;
-    int idx{};
-    if (idxs_it != idxs.end())
-    {
-        for (end = begin2; begin2 != end2; ++begin2, ++idx)
-        {
-            if (idxs_it != idxs.end() && idx == *idxs_it)
-            {
-                ++idxs_it;
-            } else {
-                std::iter_swap(end, begin2);
-                ++end;
-            }
-        }
-    } else {
-        end = end2;
-    }
-    
-    return end;
+    return res;
 }
