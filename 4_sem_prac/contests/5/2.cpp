@@ -1,18 +1,8 @@
-#pragma once
-
 #include <string>
 #include <sstream>
 #include <cmath>
 
 #define _USE_MATH_DEFINES
-
-class Figure
-{
-public:
-    virtual double get_square() const = 0;
-
-    virtual ~Figure() = default;
-};
 
 class Rectangle : Figure
 {
