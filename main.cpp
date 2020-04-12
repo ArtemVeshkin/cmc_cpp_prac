@@ -30,7 +30,7 @@ public:
 		}
 	}
 
-	FileWrapper operator=(const FileWrapper& parent)
+	FileWrapper& operator=(const FileWrapper& parent)
 	{
 		f_ = parent.f_;
 		count_ = parent.count_;
@@ -38,7 +38,7 @@ public:
 		return *this;
 	}
 	
-	FileWrapper operator=(FileWrapper&& parent)
+	FileWrapper& operator=(FileWrapper&& parent)
 	{
 		f_ = parent.f_;
 		count_ = parent.count_;
@@ -47,11 +47,8 @@ public:
 		return *this;
 	}
 
-	friend FileWrapper& operator<<(FileWrapper& out, const char& msg);
+	FileWrapper& operator<<(const char msg) {
+		fprintf(f_, "%c", msg);
+		return *this;
+	}
 };
-
-FileWrapper& operator<<(FileWrapper& out, const char& msg)
-{
-	fprintf(out.f_, "%c", msg);
-	return out;
-}
