@@ -9,7 +9,7 @@ std::string get_palindrom(std::string s)
     {
         tmp = s;
         std::reverse(tmp.begin(), tmp.end());
-        if (s == tmp)   
+        if (s == tmp)
         {
             break;
         }
