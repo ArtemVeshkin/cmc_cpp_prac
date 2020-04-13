@@ -1,54 +1,36 @@
-#include <cstdio>
+#include <cmath>
+#include <algorithm>
 
-class FileWrapper
+namespace Game
 {
-	FILE *f_ = nullptr;
-	int* count_ = nullptr;
+    template <typename T>
+    class Coord
+    {
+    public:
+        typedef T value_type;
+        T row, col;
 
-public:
-	FileWrapper(const char* filename) : f_(fopen(filename, "w")), count_(new int{1}) {}
+        Coord(void) {}
+        Coord(T row) : row(row) {}
+        Coord(T row, T col) : row(row), col(col) {}
+    };
 
-	FileWrapper(const FileWrapper& parent) : f_(parent.f_), count_(parent.count_)
-	{
-		++(*count_);
-	}
+    template <typename T>
+    T dist(Coord<T> sz, Coord<T> p1, Coord<T> p2)
+    {
+        if (p1.col > p2.col)
+        {
+            std::swap(p1, p2);
+        }
 
-	FileWrapper(FileWrapper&& parent) : f_(parent.f_), count_(parent.count_)
-	{
-		parent.count_ = new int{1};
-		parent.f_ = nullptr;
-	}
+        T d_col  = p2.col - p1.col;
+        T d_diag = p1.row - (d_col + p1.col % 2) / 2;
 
-	~FileWrapper()
-	{
-		if (*count_ == 1)
-		{
-			fclose(f_);
-			delete count_;
-		} else {
-			--(*count_);
-		}
-	}
+        if (p2.row <= (d_col + d_diag) && p2.row >= d_diag)
+        {
+            return d_col;
+        }
 
-	FileWrapper& operator=(const FileWrapper& parent)
-	{
-		f_ = parent.f_;
-		count_ = parent.count_;
-		++(*count_);
-		return *this;
-	}
-	
-	FileWrapper& operator=(FileWrapper&& parent)
-	{
-		f_ = parent.f_;
-		count_ = parent.count_;
-		parent.count_ = new int{1};
-		parent.f_ = nullptr;
-		return *this;
-	}
-
-	FileWrapper& operator<<(const char msg) {
-		fprintf(f_, "%c", msg);
-		return *this;
-	}
-};
+        return std::min(std::abs(d_diag - p2.row), std::abs(d_diag - p2.row + d_col)) + d_col;
+    }
+}
