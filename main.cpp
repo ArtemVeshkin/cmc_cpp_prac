@@ -1,36 +1,57 @@
-#include <cmath>
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <map>
 #include <algorithm>
+#include <functional>
+#include <memory>
 
-namespace Game
+class Factory
 {
-    template <typename T>
-    class Coord
-    {
-    public:
-        typedef T value_type;
-        T row, col;
-
-        Coord(void) {}
-        Coord(T row) : row(row) {}
-        Coord(T row, T col) : row(row), col(col) {}
+    const std::map<char, std::function<Figure* (const std::string&)>> figures = {
+        {'R', Rectangle::make},
+        {'S', Square::make},
+        {'C', Circle::make}
     };
 
-    template <typename T>
-    T dist(Coord<T> sz, Coord<T> p1, Coord<T> p2)
+public:
+    std::unique_ptr<Figure> make(std::string str) const
     {
-        if (p1.col > p2.col)
-        {
-            std::swap(p1, p2);
-        }
+        char type;
+        std::string params;
 
-        T d_col  = p2.col - p1.col;
-        T d_diag = p1.row - (d_col + p1.col % 2) / 2;
+        std::istringstream input{str};
+        input >> type;
+        std::getline(input, params);
 
-        if (p2.row <= (d_col + d_diag) && p2.row >= d_diag)
-        {
-            return d_col;
-        }
+        return std::unique_ptr<Figure>(figures.find(type)->second(params));
+    }
+};
 
-        return std::min(std::abs(d_diag - p2.row), std::abs(d_diag - p2.row + d_col)) + d_col;
+static Factory factory_instance()
+{
+    static Factory f;
+    return f;
+}
+
+int main()
+{
+    std::vector<std::unique_ptr<Figure>> figures;
+
+    std::string input;
+    while(std::getline(std::cin, input))
+    {
+        figures.emplace_back(std::move(factory_instance().make(input)));
+    }
+
+    std::stable_sort(figures.begin(), figures.end(),
+            [](const std::unique_ptr<Figure>& f1, const std::unique_ptr<Figure>& f2)
+    {
+        return f1->get_square() < f2->get_square();
+    });
+
+    for (size_t i = 0; i < figures.size(); ++i)
+    {
+        std::cout << figures[i]->to_string() << std::endl;
     }
 }

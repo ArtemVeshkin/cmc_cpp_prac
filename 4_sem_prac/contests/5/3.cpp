@@ -4,44 +4,54 @@
 #include <map>
 #include <algorithm>
 #include <functional>
-
-#include "include.h"
+#include <memory>
 
 class Factory
 {
-    const std::map<char, std::function<Figure* (std::string)>> figures = {
+    const std::map<char, std::function<Figure* (const std::string&)>> figures = {
         {'R', Rectangle::make},
         {'S', Square::make},
         {'C', Circle::make}
     };
 
 public:
-    Figure* make(std::string str) const
+    std::unique_ptr<Figure> make(std::string str) const
     {
         char type;
-        std::string args;
+        std::string params;
 
         std::istringstream input{str};
         input >> type;
-        std::getline(input, args);
+        std::getline(input, params);
 
-        return figures.find(type)->second(args);
+        return std::unique_ptr<Figure>(figures.find(type)->second(params));
     }
 };
 
-Factory factory_instance()
+static Factory factory_instance()
 {
-    Factory f;
-    return f
+    static Factory f;
+    return f;
 }
 
 int main()
 {
-    std::vector<double> squares;
+    std::vector<std::unique_ptr<Figure>> figures;
 
     std::string input;
     while(std::getline(std::cin, input))
     {
-        
+        figures.emplace_back(std::move(factory_instance().make(input)));
+    }
+
+    std::stable_sort(figures.begin(), figures.end(),
+            [](const std::unique_ptr<Figure>& f1, const std::unique_ptr<Figure>& f2)
+    {
+        return f1->get_square() < f2->get_square();
+    });
+
+    for (size_t i = 0; i < figures.size(); ++i)
+    {
+        std::cout << figures[i]->to_string() << std::endl;
     }
 }
